@@ -7,7 +7,7 @@
 A program that generates LaTeX formatted worksheets for practicing times tables.
 
 ## Requirements
-- Java (JDK 20 or later)
+- Java (JDK 11 or later)
 - LaTeX Distribution (TeX Live, MiKTeX, etc.)
 - pdflatex (included in LaTeX distributions)
   - Less common tex packages: enumerate, titling
