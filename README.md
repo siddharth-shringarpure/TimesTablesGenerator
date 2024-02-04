@@ -23,7 +23,7 @@ cd times-tables-generator
 2. Compile and run the Java program:
 
 ```bash
-javac TimesTablesGenerator.java; java TimesTablesGenerator
+javac Main.java; java Main
 ```
 
 3. The program will generate a LaTeX file and compile it into a PDF (worksheet.pdf). A success message will be displayed in the console once complete.
