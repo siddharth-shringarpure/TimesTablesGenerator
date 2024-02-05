@@ -9,7 +9,6 @@ public class Main {
         String latexContent = generateLatexContent();
 
         try {
-
             String latexFileName = "worksheet.tex";
             String pdfFileName = "worksheet.pdf";
 
@@ -89,15 +88,8 @@ public class Main {
     }
 
     private static void pdfCompiler(String latexFileName) throws InterruptedException, IOException {
-//        createDirectory(outputDirectory); // Ensure the output directory exists
-
         ProcessBuilder processBuilder = new ProcessBuilder("pdflatex", latexFileName);
-//        processBuilder.directory(new File(outputDirectory));
-
-//        Process process = processBuilder.start();
         processBuilder.start();
-
-
     }
 
 }
