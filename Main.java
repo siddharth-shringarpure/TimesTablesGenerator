@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Random;
 
 public class Main {
+
+    public static int numQuestions = 120;
     public static void main(String[] args) {
         String latexContent = generateLatexContent();
 
@@ -26,6 +28,8 @@ public class Main {
         }
     }
 
+
+
     public static String preambleReader() {
         String preambleFile = "preamble.tex";
 
@@ -34,6 +38,7 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new FileReader(preambleFile))) {
             String br_line;
             while ((br_line = br.readLine()) != null) {
+                br_line = br_line.replace("\\newcommand{\\numQuestions}{20}", "\\newcommand{\\numQuestions}{" + numQuestions + "}");
                 preamble.append(br_line).append("\n");
             }
         }
@@ -46,13 +51,13 @@ public class Main {
     }
 
 
-    public static String questionGenerator(int n) {
+    public static String questionGenerator() {
         String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
         Random random = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
 
         // Generate n questions
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < numQuestions; i++) {
             int operand1 = random.nextInt(12) + 1;  // Random number between 1 and 12
             int operand2 = random.nextInt(12) + 1;  // as above
 
@@ -66,15 +71,15 @@ public class Main {
 
     private static String generateLatexContent() {
 
-    return preambleReader() +
-            "\\begin{document}\n" +
-            "\\maketitle\n" +
-            "\\section*{Questions}" +
-            "\\vspace{1em}" +
-            "\\begin{enumerate}" +
-            questionGenerator(120) +
-            "\\end{enumerate}" +
-            "\\end{document}";
+        return preambleReader() +
+                "\\begin{document}\n" +
+                "\\maketitle\n" +
+                "\\section*{Questions}" +
+                "\\vspace{1em}" +
+                "\\begin{enumerate}" +
+                questionGenerator() +
+                "\\end{enumerate}" +
+                "\\end{document}";
     }
 
     private static void createTex(String fileName, String content) throws IOException {
