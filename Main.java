@@ -23,7 +23,7 @@ public class Main {
                     break;
                 }
 
-                numQuestions = Integer.parseInt(inp.nextLine());
+                numQuestions = Integer.parseInt(input);
 
                 if (numQuestions == 0) {
                     System.out.println(inp);
