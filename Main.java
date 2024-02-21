@@ -4,6 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
+import java.io.File;
+import java.nio.file.*;
 
 public class Main {
 
@@ -13,8 +15,14 @@ public class Main {
         Scanner inp = new Scanner(System.in);
 
         while (true) {
-            System.out.println("Enter the number of questions, or 0 to exit: ");
+            System.out.println("Enter the number of questions, 0 to exit, or nothing for 23 questions: ");
             try {
+                String input = inp.nextLine();
+                if (input.isEmpty()) {
+                    numQuestions = 23;
+                    break;
+                }
+
                 numQuestions = Integer.parseInt(inp.nextLine());
 
                 if (numQuestions == 0) {
@@ -35,16 +43,45 @@ public class Main {
         }
 
         String latexContent = generateLatexContent();
+        System.out.println("content generated");
+
 
         try {
-            String latexFileName = "worksheet.tex";
-            String pdfFileName = "worksheet.pdf";
+
+            /* Handle directories for exported files.
+               If the directory does not exist, create it */
+
+            // Create tex_output directory if it does not exist
+            Path tex_dir_path = Paths.get("tex_output");
+            Files.createDirectories(tex_dir_path);
+
+            // Create pdf_output directory if it does not exist
+            Path pdf_dir_path = Paths.get("pdf_output");
+            Files.createDirectories(pdf_dir_path);
+
+            // Set file names
+
+            String baseFileName = "worksheet";
+            String tExt = ".tex";
+            String pExt = ".pdf";
+
+            String fileName = baseFileName;
+
+
+            int i = 0;
+            while (Files.exists(tex_dir_path.resolve(fileName + tExt)) || Files.exists(pdf_dir_path.resolve(fileName + pExt))) {
+                i++;
+                fileName = baseFileName + "_" + i;
+            }
+
+            String latexFileName = tex_dir_path + "/" + fileName + tExt;
+            String pdfFileName = pdf_dir_path + "/" + fileName + pExt;
 
             // Save LaTeX content to a .tex file
             createTex(latexFileName, latexContent);
 
             // Compile tex file to PDF
-            pdfCompiler(latexFileName);
+            pdfCompiler(latexFileName, pdf_dir_path.toString());
 
             System.out.println("Success: " + pdfFileName);
         }
@@ -77,12 +114,15 @@ public class Main {
     }
 
 
-    public static String questionGenerator() {
+    public static String ttQuestionGenerator() {
         String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
         Random random = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
 
-        // Generate n questions
+
+
+
+        // Generate correct number of questions
         for (int i = 0; i < numQuestions; i++) {
             int operand1 = random.nextInt(12) + 1;  // Random number between 1 and 12
             int operand2 = random.nextInt(12) + 1;  // as above
@@ -103,7 +143,7 @@ public class Main {
                 "\\section*{Questions}" +
                 "\\vspace{1em}" +
                 "\\begin{enumerate}" +
-                questionGenerator() +
+                ttQuestionGenerator() +
                 "\\end{enumerate}" +
                 "\\end{document}";
     }
@@ -118,9 +158,12 @@ public class Main {
         }
     }
 
-    private static void pdfCompiler(String latexFileName) throws InterruptedException, IOException {
-        ProcessBuilder processBuilder = new ProcessBuilder("pdflatex", latexFileName);
-        processBuilder.start();
+    private static void pdfCompiler(String latexFileName, String pdfOutputDir) throws InterruptedException, IOException {
+        Path absLatexFilePath = Paths.get(latexFileName).toAbsolutePath();
+        ProcessBuilder processBuilder = new ProcessBuilder("pdflatex", absLatexFilePath.toString());
+        processBuilder.directory(new File(pdfOutputDir));
+        processBuilder.redirectErrorStream(true); // Merge standard output and error streams
+        Process process = processBuilder.start();
     }
 
 }
