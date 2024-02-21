@@ -35,7 +35,7 @@ You can customise the generated worksheets by modifying the `preamble.tex` file 
 
 
 ## Planned Improvements
-- Add support for custom number of questions
+- ✅ Add support for custom number of questions
 - Add support for output in a separate directory
   - Add support for saving multiple worksheets (currently overwrites previous worksheet)
 - Add support for user arguments:
