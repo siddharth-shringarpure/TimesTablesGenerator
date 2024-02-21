@@ -12,12 +12,12 @@ public class Main {
     static int numQuestions;
     public static void main(String[] args) {
 
-        Scanner inp = new Scanner(System.in);
+        Scanner userInputScanner = new Scanner(System.in);
 
         while (true) {
             System.out.println("Enter the number of questions, 0 to exit, or nothing for 23 questions: ");
             try {
-                String input = inp.nextLine();
+                String input = userInputScanner.nextLine();
                 if (input.isEmpty()) {
                     numQuestions = 23;
                     break;
@@ -26,7 +26,7 @@ public class Main {
                 numQuestions = Integer.parseInt(input);
 
                 if (numQuestions == 0) {
-                    System.out.println(inp);
+                    System.out.println(userInputScanner);
                     System.out.println("Exiting...");
                     System.exit(0);
                 }
@@ -42,7 +42,7 @@ public class Main {
             }
         }
 
-        String latexContent = generateLatexContent();
+        String generatedLatexContent = generateLatexContent();
         System.out.println("content generated");
 
 
@@ -62,28 +62,28 @@ public class Main {
             // Set file names
 
             String baseFileName = "worksheet";
-            String tExt = ".tex";
-            String pExt = ".pdf";
+            String texExtension = ".tex";
+            String pdfExtension = ".pdf";
 
             String fileName = baseFileName;
 
 
             int i = 0;
-            while (Files.exists(tex_dir_path.resolve(fileName + tExt)) || Files.exists(pdf_dir_path.resolve(fileName + pExt))) {
+            while (Files.exists(tex_dir_path.resolve(fileName + texExtension)) || Files.exists(pdf_dir_path.resolve(fileName + pdfExtension))) {
                 i++;
                 fileName = baseFileName + "_" + i;
             }
 
-            String latexFileName = tex_dir_path + "/" + fileName + tExt;
-            String pdfFileName = pdf_dir_path + "/" + fileName + pExt;
+            String latexFilePath = tex_dir_path + "/" + fileName + texExtension;
+            String pdfFilePath = pdf_dir_path + "/" + fileName + pdfExtension;
 
             // Save LaTeX content to a .tex file
-            createTex(latexFileName, latexContent);
+            createTex(latexFilePath, generatedLatexContent);
 
             // Compile tex file to PDF
-            pdfCompiler(latexFileName, pdf_dir_path.toString());
+            pdfCompiler(latexFilePath, pdf_dir_path.toString());
 
-            System.out.println("Success: " + pdfFileName);
+            System.out.println("Success: " + pdfFilePath);
         }
 
         catch (IOException | InterruptedException e) {
@@ -118,9 +118,6 @@ public class Main {
         String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
         Random random = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
-
-
-
 
         // Generate correct number of questions
         for (int i = 0; i < numQuestions; i++) {
