@@ -17,7 +17,7 @@ A program that generates LaTeX formatted worksheets for practicing times tables.
 
 ```bash
 git clone https://github.com/siddharth-shringarpure/TimesTablesGenerator.git
-cd times-tables-generator
+cd TimesTablesGenerator
 ```
 
 2. Compile and run the Java program:
@@ -26,7 +26,10 @@ cd times-tables-generator
 javac Main.java; java Main
 ```
 
-3. The program will generate a LaTeX file and compile it into a PDF (worksheet.pdf). A success message will be displayed in the console once complete.
+3. Follow the program's prompts to customise the worksheet and generate it.
+
+
+4. The program will generate a LaTeX file and compile it into a PDF. A success message will be displayed in the console once complete, with a relative path to the generated PDF file.
 
 
 ## Customisation
@@ -35,9 +38,10 @@ You can customise the generated worksheets by modifying the `preamble.tex` file 
 
 
 ## Planned Improvements
-- ✅ Add support for custom number of questions
-- Add support for output in a separate directory
-  - Add support for saving multiple worksheets (currently overwrites previous worksheet)
+
+- ✅ Add support for output in a separate directory
+  - ✅ Add support for saving multiple worksheets (currently overwrites previous worksheet)
 - Add support for user arguments:
-  - Number of questions, worksheets, etc.
+  - ✅ Number of questions
+  - Number of worksheets
 - Remove temporary files after compilation
