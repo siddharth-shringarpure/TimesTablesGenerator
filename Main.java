@@ -3,11 +3,37 @@ import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
 
-    public static int numQuestions = 120;
+    static int numQuestions;
     public static void main(String[] args) {
+
+        Scanner inp = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Enter the number of questions, or 0 to exit: ");
+            try {
+                numQuestions = Integer.parseInt(inp.nextLine());
+
+                if (numQuestions == 0) {
+                    System.out.println(inp);
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }
+
+                if (numQuestions < 0) {
+                    throw new IllegalArgumentException();
+                }
+                break;
+            }
+
+            catch (Exception e) {
+                System.out.println("Invalid input. Please enter a positive integer.");
+            }
+        }
+
         String latexContent = generateLatexContent();
 
         try {
