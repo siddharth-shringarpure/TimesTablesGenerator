@@ -2,10 +2,12 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 import java.nio.file.*;
+import java.util.Set;
 
 public class Main {
 
@@ -118,25 +120,32 @@ public class Main {
 
 
     public static String ttQuestionGenerator() {
-        String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
+        String questionFormat = "\\item{\\large\\hspace{20pt} $%d \\times %d =$}";
         Random rng = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
+        Set<Tuple<Integer>> uniqueQuestions = new HashSet<>();  // Store unique questions
 
-        // Generate correct number of questions
-        for (int i = 0; i < numQuestions; i++) {
-            int operand1 = rng.nextInt(12) + 1;  // Random number between 1 and 12 inclusive
-            int operand2 = rng.nextInt(12) + 1;  // as above
+        while (uniqueQuestions.size() < numQuestions) {
+            // Generate random numbers between 2 and 12 inclusive
+            int operand1 = rng.nextInt(2, 12) + 1;
+            int operand2 = rng.nextInt(2, 12) + 1;
 
-            questionsBuilder.append(questionFormat.replace("x", String.valueOf(operand1)).replace("y", String.valueOf(operand2)));
-            questionsBuilder.append("\n");
+            // Create an ordered tuple to store the operands
+            Tuple<Integer> questionTuple = new Tuple<>(operand1, operand2);
+
+            // Ensure questions are unique
+            if (uniqueQuestions.contains(questionTuple)) {
+                continue;
+            }
+
+            uniqueQuestions.add(questionTuple);
+            questionsBuilder.append(String.format(questionFormat, operand1, operand2)).append("\n");
         }
-
         return questionsBuilder.toString();
     }
 
 
     private static String generateLatexContent() {
-
         return preambleReader() +
                 "\\begin{document}\n" +
                 "\\maketitle\n" +
