@@ -120,7 +120,7 @@ public class Main {
 
 
     public static String ttQuestionGenerator() {
-        String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
+        String questionFormat = "\\item{\\large\\hspace{20pt} $%d \\times %d =$}";
         Random rng = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
         Set<Tuple<Integer>> uniqueQuestions = new HashSet<>();  // Store unique questions
@@ -133,15 +133,13 @@ public class Main {
             // Create an ordered tuple to store the operands
             Tuple<Integer> questionTuple = new Tuple<>(operand1, operand2);
 
-            String question = questionFormat.replace("x", String.valueOf(operand1)).replace("y", String.valueOf(operand2));
-
             // Ensure questions are unique
             if (uniqueQuestions.contains(questionTuple)) {
                 continue;
             }
 
             uniqueQuestions.add(questionTuple);
-            questionsBuilder.append(question).append("\n");
+            questionsBuilder.append(String.format(questionFormat, operand1, operand2)).append("\n");
         }
         return questionsBuilder.toString();
     }
