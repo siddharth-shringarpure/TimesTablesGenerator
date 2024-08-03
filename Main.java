@@ -9,81 +9,41 @@ import java.nio.file.*;
 
 public class Main {
 
-    static int numQuestions;
+    private static final int DEFAULT_NUM_QUESTIONS = 23;
+    private static final String BASE_FILE_NAME = "worksheet";
+    private static final String TEX_EXTENSION = ".tex";
+    private static final String PDF_EXTENSION = ".pdf";
+    private static final String TEX_OUTPUT_DIR = "tex_output";
+    private static final String PDF_OUTPUT_DIR = "pdf_output";
+    private static int numQuestions;
+
     public static void main(String[] args) {
 
         Scanner userInputScanner = new Scanner(System.in);
 
-        while (true) {
-            System.out.println("Enter the number of questions, 0 to exit, or nothing for 23 questions: ");
-            try {
-                String input = userInputScanner.nextLine();
-                if (input.isEmpty()) {
-                    numQuestions = 23;
-                    break;
-                }
-
-                numQuestions = Integer.parseInt(input);
-
-                if (numQuestions == 0) {
-                    System.out.println(userInputScanner);
-                    System.out.println("Exiting...");
-                    System.exit(0);
-                }
-
-                if (numQuestions < 0) {
-                    throw new IllegalArgumentException();
-                }
-                break;
-            }
-
-            catch (Exception e) {
-                System.out.println("Invalid input. Please enter a positive integer.");
-            }
-        }
+        numQuestions = getNumQuestions(userInputScanner);
 
         String generatedLatexContent = generateLatexContent();
-        System.out.println("content generated");
 
 
         try {
-
             /* Handle directories for exported files.
                If the directory does not exist, create it */
 
             // Create tex_output directory if it does not exist
-            Path tex_dir_path = Paths.get("tex_output");
-            Files.createDirectories(tex_dir_path);
+            prepareDirectories();
 
-            // Create pdf_output directory if it does not exist
-            Path pdf_dir_path = Paths.get("pdf_output");
-            Files.createDirectories(pdf_dir_path);
+            String fileName = getUniqueFileName();
 
-            // Set file names
+            String latexFilePath = TEX_OUTPUT_DIR + "/" + fileName + TEX_EXTENSION;
+            String pdfFilePath = PDF_OUTPUT_DIR + "/" + fileName + PDF_EXTENSION;
 
-            String baseFileName = "worksheet";
-            String texExtension = ".tex";
-            String pdfExtension = ".pdf";
-
-            String fileName = baseFileName;
-
-
-            int i = 0;
-            while (Files.exists(tex_dir_path.resolve(fileName + texExtension)) || Files.exists(pdf_dir_path.resolve(fileName + pdfExtension))) {
-                i++;
-                fileName = baseFileName + "_" + i;
-            }
-
-            String latexFilePath = tex_dir_path + "/" + fileName + texExtension;
-            String pdfFilePath = pdf_dir_path + "/" + fileName + pdfExtension;
-
-            // Save LaTeX content to a .tex file
             createTex(latexFilePath, generatedLatexContent);
 
             // Compile tex file to PDF
-            pdfCompiler(latexFilePath, pdf_dir_path.toString());
+            compilePDF(latexFilePath, PDF_OUTPUT_DIR);
 
-            System.out.println("Success: " + pdfFilePath);
+            System.out.println("Content generated! Find it at: " + pdfFilePath);
         }
 
         catch (IOException | InterruptedException e) {
@@ -91,6 +51,49 @@ public class Main {
         }
     }
 
+
+
+    private static int getNumQuestions(Scanner scanner) {
+        while (true) {
+            System.out.println("Enter the number of questions, 0 to exit, or nothing for " + DEFAULT_NUM_QUESTIONS + " questions: ");
+            try {
+                String input = scanner.nextLine();
+                if (input.isEmpty()) {
+                    return DEFAULT_NUM_QUESTIONS;
+                }
+
+                int numQuestions = Integer.parseInt(input);
+                if (numQuestions < 0) {
+                    throw new IllegalArgumentException();
+                }
+
+                if (numQuestions == 0) {
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                }
+                return numQuestions;
+            }
+
+            catch (Exception e) {
+                System.out.println("Invalid input. Please enter a positive integer.");
+            }
+        }
+    }
+
+    private static void prepareDirectories() throws IOException {
+        Files.createDirectories(Paths.get(TEX_OUTPUT_DIR));
+        Files.createDirectories(Paths.get(PDF_OUTPUT_DIR));
+    }
+
+    private static String getUniqueFileName() {
+        String fileName = BASE_FILE_NAME;
+        int i = 0;
+        while (Files.exists(Paths.get(TEX_OUTPUT_DIR, fileName + TEX_EXTENSION)) || Files.exists(Paths.get(PDF_OUTPUT_DIR, fileName + PDF_EXTENSION))) {
+            i++;
+            fileName = BASE_FILE_NAME + "_" + i;
+        }
+        return fileName;
+    }
 
 
     public static String preambleReader() {
@@ -116,13 +119,13 @@ public class Main {
 
     public static String ttQuestionGenerator() {
         String questionFormat = "\\item{\\large\\hspace{20pt} $x \\times y =$}";
-        Random random = new Random();
+        Random rng = new Random();
         StringBuilder questionsBuilder = new StringBuilder();
 
         // Generate correct number of questions
         for (int i = 0; i < numQuestions; i++) {
-            int operand1 = random.nextInt(12) + 1;  // Random number between 1 and 12
-            int operand2 = random.nextInt(12) + 1;  // as above
+            int operand1 = rng.nextInt(12) + 1;  // Random number between 1 and 12 inclusive
+            int operand2 = rng.nextInt(12) + 1;  // as above
 
             questionsBuilder.append(questionFormat.replace("x", String.valueOf(operand1)).replace("y", String.valueOf(operand2)));
             questionsBuilder.append("\n");
@@ -155,12 +158,13 @@ public class Main {
         }
     }
 
-    private static void pdfCompiler(String latexFileName, String pdfOutputDir) throws InterruptedException, IOException {
+    private static void compilePDF(String latexFileName, String pdfOutputDir) throws InterruptedException, IOException {
         Path absLatexFilePath = Paths.get(latexFileName).toAbsolutePath();
         ProcessBuilder processBuilder = new ProcessBuilder("pdflatex", absLatexFilePath.toString());
         processBuilder.directory(new File(pdfOutputDir));
-        processBuilder.redirectErrorStream(true); // Merge standard output and error streams
+        processBuilder.redirectErrorStream(true);  // Merge standard output and error streams
         Process process = processBuilder.start();
+        process.waitFor();
     }
 
 }
